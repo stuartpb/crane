@@ -23,8 +23,12 @@ The syntax producing these tokens would be pretty much just "everything separate
 
 ## Compiling
 
-Compiling would evaluate the tree in an environment halfway between Lua and Haskell: the only types are boolean, number, table, string, function, nil, and maybe some kind of userdata (or coroutine), but all functions are curried, and the environment is built as a Prelude.
+Compiling would evaluate the parsed tree in an environment halfway between Lua and Haskell: the only types are boolean, number, table, string, function, nil, and maybe some kind of userdata (or coroutine), but all functions are curried, and the environment is built as a Prelude.
 
 The environment would be a table with all global names in it, and would start with the primitive functions that can't be defined (ie. the kind of things that Lua provides in its Standard Library) preloaded (the Skyhook). This includes constructors like `function` and basic operations like addition (`+`) and indexing (`[]` and/or `.`).
+
+At the head of every branch, the interpreter goes into the global environment table and calls the corresponding function with the following token (or result of a branch) in the branch (if there is any), and so on until the branch is consumed.
+
+The environment would have a stack where further lexical contexts inherit non-conflicting names and that whole thing - basically, there'd be the *private* environment, which is generally encapsulated with scope in other languages, and the *public* environment, which I've never really seen in a stack-based context (ie. not just global clobbering) outside of shell programming, to be honest. (It feels weird to say that a concept useful for *functional* programming could come from experience with *Bash*, but there it is.)
 
 At this point, you'd have preludes that would define the macros for converting whatever expressions into whatever machine code (or JavaScript or whatever) following whatever rules. The compiler would run through these to fill out the environment that could be said to define the actual "language" (which would be, like I said, something like Nim, with lots of nice advanced language features that are all optional if you just want to write something super hard-coded and stuff), then it'd go through the whole "compiling" stuff that I fully realize would make up 99.9% of the actual work of developing this (which is why this has all stayed a *thought experiment* for me instead of a project I've actually *undertaken*).
